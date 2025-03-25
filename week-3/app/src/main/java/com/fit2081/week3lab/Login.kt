@@ -1,5 +1,6 @@
 package com.fit2081.week3lab
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 
 // UI
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,6 +71,8 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     var passwordError by remember { mutableStateOf(false) }
 
     var showDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     Column (
         modifier = modifier.fillMaxSize().padding(16.dp),
@@ -127,7 +131,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                 emailError = !isValidEmail(email)
                 passwordError = password.length < 6
                 if (!emailError && !passwordError) {
-                    // Toast.makeText(LocalContext.current, "Login successful", Toast.LENGTH_SHORT).show()
+                    context.startActivity(Intent(context, Dashboard::class.java))
                 }
             },
             modifier = Modifier.fillMaxWidth()
