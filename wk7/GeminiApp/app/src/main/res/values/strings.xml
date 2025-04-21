@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">GeminiApp</string>
+    <string name="app_title">Gemini App</string>
+    <string name="prompt_label">Enter your prompt</string>
+    <string name="action_go">Go</string>
+
+    <string name="prompt_placeholder">Enter your prompt</string>
+    <string name="results_placeholder">Results will appear here</string>
+</resources>

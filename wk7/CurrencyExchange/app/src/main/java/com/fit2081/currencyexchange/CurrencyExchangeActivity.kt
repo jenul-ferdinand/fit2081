@@ -6,6 +6,7 @@ package com.fit2081.currencyexchange
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.fit2081.currencyexchange.data.repository.RatesRepository
 import com.fit2081.currencyexchange.ui.theme.CurrencyExchangeTheme
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class CurrencyExchangeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +65,9 @@ class CurrencyExchangeActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CurrencyExchangeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
                     CurrencyExchangeScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -72,6 +76,10 @@ class CurrencyExchangeActivity : ComponentActivity() {
         }
     }
 }
+
+// !|===============================================================================================|
+// !| Currency Exchange Screen
+// !|===============================================================================================|
 
 @Composable
 fun CurrencyExchangeScreen(
@@ -89,24 +97,27 @@ fun CurrencyExchangeScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        // Base currency input
         OutlinedTextField(
-            value = baseCurrency,
+            value = baseCurrency.toUpperCase(),
             onValueChange = { baseCurrency = it },
             label = { Text("Base Currency") },
             modifier = Modifier.fillMaxWidth()
         )
+        // Target currency input
         OutlinedTextField(
-            value = targetCurrency,
+            value = targetCurrency.toUpperCase(),
             onValueChange = { targetCurrency = it },
             label = { Text("Target Currency") },
             modifier = Modifier.fillMaxWidth()
         )
+        // Amount input
         OutlinedTextField(
             value = amount,
             onValueChange = { amount = it },
@@ -118,10 +129,14 @@ fun CurrencyExchangeScreen(
         Button(
             onClick = {
                 coroutineScope.launch {
+                    // Get the rate for the target currency
                     val rate = repo.getRate(baseCurrency, targetCurrency)?.rates?.get(targetCurrency)
 
-                    if (rate != null) {
-                        result = String.format("%.2f", (amount.toDouble() * rate))
+                    val amountVal = amount.toDoubleOrNull() ?: 0.0
+                    result = if (rate != null) {
+                        String.format(Locale.US, "%.2f", amountVal * rate)
+                    } else {
+                        "Currency rate not available"
                     }
                 }
             }
@@ -141,10 +156,20 @@ fun CurrencyExchangeScreen(
     }
 }
 
-@Preview(showBackground = true)
+/**
+ * ? Preview for CurrencyExchangeScreen
+ */
+@Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun CurrencyExchangeScreenPreview() {
     CurrencyExchangeTheme {
-        CurrencyExchangeScreen()
+        Scaffold(
+            modifier = Modifier
+                .fillMaxSize()
+        ) { innerPadding ->
+            CurrencyExchangeScreen(
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
     }
 }
